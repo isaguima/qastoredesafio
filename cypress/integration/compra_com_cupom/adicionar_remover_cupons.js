@@ -10,6 +10,7 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
 
     it('Exibir o campo "Cupom de desconto"', () => {
         cy.get('[for=usarCupom]')
+            .should("exist")
             .should("contain", "Cupom de desconto:");
 
         cy.get('#usarCupom')
@@ -23,11 +24,16 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
     it('Adicionar um cupom que existe', () => {
         cy.get('#usarCupom').type(cupomFrete);
         cy.get('#usarCupom').siblings('button').click();    
-                
+
+        cy.get('#usarCupom')
+            .should("not.exist");
+
         cy.get(".cupom-sucesso b")
+            .should("exist")
             .should("contain", "Cupom de desconto:");
     
         cy.get(".cupom-sucesso span")
+            .should("exist")
             .should("contain", cupomFrete);
     });
 
@@ -42,19 +48,18 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
             .should("not.exist");
 
         cy.get(".alert")
-            .should("contain", "Cupom não encontrado.")
+            .should("exist")
+            .should("contain", "Cupom não encontrado.");
 
         cy.get('#usarCupom')
+            .should("exist")
             .should("have.value", "");
     });
 
     it('Adicionar cupom no carrinho', () => {
         cy.get('#usarCupom').type(cupomValorFixo);
         cy.get('#usarCupom').siblings('button').click();
-        
-        cy.get('#usarCupom')
-            .should("not.exist");
-
+    
         cy.get(".cupom-sucesso b")
             .should("contain", "Cupom de desconto:");
     
@@ -70,7 +75,10 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
         let valorSubtotal;
         let valorTotal;
         
-        cy.get(".subtotal strong").invoke("attr", "data-subtotal-valor").then(value => { valorSubtotal = Number(value)});
+        cy.get(".subtotal strong").should("have.attr", "data-subtotal-valor");
+        cy.get(".subtotal strong").invoke("attr", "data-subtotal-valor").then(value => { 
+            valorSubtotal = Number(value.replace(",","."))
+        });
 
         cy.get(".total strong").should("have.attr", "data-total-valor");
         cy.get(".total strong").invoke("attr", "data-total-valor").then(value => { 
@@ -95,6 +103,7 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
             .should("not.exist");
     
         cy.get('[for=usarCupom]')
+            .should("exist")
             .should("contain", "Cupom de desconto:");
 
         cy.get('#usarCupom')
@@ -107,10 +116,13 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
         let valorSubtotal;
         let valorTotal;
     
-        cy.get(".subtotal strong").invoke("attr", "data-subtotal-valor").then(value => { valorSubtotal = Number(value)});
+        cy.get(".subtotal strong").should("have.attr", "data-subtotal-valor");
+        cy.get(".subtotal strong").invoke("attr", "data-subtotal-valor").then(value => { 
+            valorSubtotal = Number(value.replace(",","."))
+        });
 
         cy.get(".total strong").should("have.attr", "data-total-valor");
-        cy.get(".total strong").invoke("attr", "data-total-valor").then(value => { 
+        cy.get(".total strong").invoke("attr", "data-total-valor").then(value => {
             valorTotal = Number(value.replace(",",".")); 
             expect(valorTotal).to.be.equal(valorSubtotal);
         });    
@@ -122,11 +134,25 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
         cy.get("[title='Remover cupom']").click();
         cy.get('#usarCupom').type(cupomFrete);
         cy.get('#usarCupom').siblings('button').click();    
-        
-        cy.get(".cupom-sucesso b")
-            .should("contain", "Cupom de desconto:");
-    
+           
         cy.get(".cupom-sucesso span")
-            .should("contain", cupomFrete);        
+            .should("contain", cupomFrete);
+
+        cy.get(".cupom-valor strong")
+            .should("contain", "Frete Grátis");
+
+        let valorSubtotal;
+        let valorTotal;
+        
+        cy.get(".subtotal strong").should("have.attr", "data-subtotal-valor");
+        cy.get(".subtotal strong").invoke("attr", "data-subtotal-valor").then(value => { 
+            valorSubtotal = Number(value.replace(",","."))
+        });
+
+        cy.get(".total strong").should("have.attr", "data-total-valor");
+        cy.get(".total strong").invoke("attr", "data-total-valor").then(value => { 
+            valorTotal = Number(value.replace(",",".")); 
+            expect(valorTotal).to.be.equal(valorSubtotal);
+        });   
     });
 })
