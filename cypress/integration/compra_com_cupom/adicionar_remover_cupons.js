@@ -9,37 +9,17 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
     });
 
     it('Exibir o campo "Cupom de desconto"', () => {
-        cy.get('[for=usarCupom]')
-            .should("exist")
-            .should("contain", "Cupom de desconto:");
-
-        cy.get('#usarCupom')
-            .should("exist");
-
-        cy.get('#usarCupom').siblings('button')
-            .should("exist")
-            .should("contain", "Usar cupom");
+        cy.validaCampoCupom();
     });
 
     it('Adicionar um cupom que existe', () => {
-        cy.get('#usarCupom').type(cupomFrete);
-        cy.get('#usarCupom').siblings('button').click();    
+        cy.adicionaCupom(cupomFrete);
 
-        cy.get('#usarCupom')
-            .should("not.exist");
-
-        cy.get(".cupom-sucesso b")
-            .should("exist")
-            .should("contain", "Cupom de desconto:");
-    
-        cy.get(".cupom-sucesso span")
-            .should("exist")
-            .should("contain", cupomFrete);
+        cy.validaTagCupom(cupomFrete, "Frete Grátis");
     });
 
     it('Adicionar um cupom que NÃO existe', () => {
-        cy.get('#usarCupom').type("GRATIS");
-        cy.get('#usarCupom').siblings('button').click();    
+        cy.adicionaCupom("GRATIS");
             
         cy.get(".cupom-sucesso b")
             .should("not.exist");
@@ -57,20 +37,9 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
     });
 
     it('Adicionar cupom no carrinho', () => {
-        cy.get('#usarCupom').type(cupomValorFixo);
-        cy.get('#usarCupom').siblings('button').click();
+        cy.adicionaCupom(cupomValorFixo);
     
-        cy.get(".cupom-sucesso b")
-            .should("contain", "Cupom de desconto:");
-    
-        cy.get(".cupom-sucesso span")
-            .should("contain", cupomValorFixo);
-
-        cy.get("[title='Remover cupom']")
-            .should("exist");
-
-        cy.get(".cupom-valor")
-            .should("contain", "R$ 30,00");
+        cy.validaTagCupom(cupomValorFixo, "R$ 30,00");
 
         let valorSubtotal;
         let valorTotal;
@@ -89,8 +58,7 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
     });
 
     it('Remover o cupom do carrinho', () => {
-        cy.get('#usarCupom').type(cupomValorFixo);
-        cy.get('#usarCupom').siblings('button').click();    
+        cy.adicionaCupom(cupomValorFixo);
         cy.get("[title='Remover cupom']").click();
 
         cy.get(".cupom-sucesso b")
@@ -102,16 +70,7 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
         cy.get(".cupom-valor")
             .should("not.exist");
     
-        cy.get('[for=usarCupom]')
-            .should("exist")
-            .should("contain", "Cupom de desconto:");
-
-        cy.get('#usarCupom')
-            .should("exist");
-
-        cy.get('#usarCupom').siblings('button')
-            .should("exist")
-            .should("contain", "Usar cupom");
+        cy.validaCampoCupom();
 
         let valorSubtotal;
         let valorTotal;
@@ -129,17 +88,11 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
     });
 
     it('Remover o cupom do carrinho e adicionar outro cupom', () => {
-        cy.get('#usarCupom').type(cupomValorFixo);
-        cy.get('#usarCupom').siblings('button').click();                
+        cy.adicionaCupom(cupomValorFixo);            
         cy.get("[title='Remover cupom']").click();
-        cy.get('#usarCupom').type(cupomFrete);
-        cy.get('#usarCupom').siblings('button').click();    
+        cy.adicionaCupom(cupomFrete);    
            
-        cy.get(".cupom-sucesso span")
-            .should("contain", cupomFrete);
-
-        cy.get(".cupom-valor strong")
-            .should("contain", "Frete Grátis");
+        cy.validaTagCupom(cupomFrete, "Frete Grátis");
 
         let valorSubtotal;
         let valorTotal;

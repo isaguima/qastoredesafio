@@ -5,22 +5,13 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
 
     beforeEach(() => {
         cy.visit('https://qastoredesafio.lojaintegrada.com.br/carrinho/produto/118475035/adicionar');
-
-        cy.get('#calcularFrete').type("03017900");
-        cy.get('#calcularFrete').siblings('button').click();
-
-        cy.get('[data-code="sedex"]').should("exist").check({timeout: 5000});
-
-        cy.get('#usarCupom').type(cupomFrete);
-        cy.get('#usarCupom').siblings('button').click();
+        cy.adicionaFrete("03017900");
+        cy.get('[data-code="sedex"]').check();
+        cy.adicionaCupom(cupomFrete);
     });
 
     it('Adicionar o cupom Frete grátis', () => {    
-        cy.get(".cupom-sucesso span")
-            .should("contain", cupomFrete);
-
-        cy.get(".cupom-valor")
-            .should("contain", "Frete Grátis");
+        cy.validaTagCupom(cupomFrete, "Frete Grátis");
 
         cy.get('[data-code="sedex"]')
             .should("be.checked");
@@ -35,7 +26,7 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
         let valorTotal;
         
         cy.get(".subtotal strong").should("have.attr", "data-subtotal-valor");
-        cy.get(".subtotal strong").invoke("attr", "data-subtotal-valor").then(value => { valorSubtotal = Number(value)});
+        cy.get(".subtotal strong").invoke("attr", "data-subtotal-valor").then(value => {valorSubtotal = Number(value)});
 
         cy.get(".total strong").should("have.attr", "data-total-valor");
         cy.get(".total strong").invoke("attr", "data-total-valor").then(value => { 
@@ -46,14 +37,9 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
     });
 
     it('Manter o cupom Frete grátis após alterar o CEP', () => {
-        cy.get('#calcularFrete').type("05767001");
-        cy.get('#calcularFrete').siblings('button').click();
+        cy.adicionaFrete("05767001");
     
-        cy.get(".cupom-sucesso span")
-            .should("contain", cupomFrete);
-
-        cy.get(".cupom-valor")
-            .should("contain", "Frete Grátis");
+        cy.validaTagCupom(cupomFrete, "Frete Grátis");
 
         cy.get('[data-code="sedex"]')
             .should("be.checked");
@@ -68,7 +54,7 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
         let valorTotal;
         
         cy.get(".subtotal strong").should("have.attr", "data-subtotal-valor");
-        cy.get(".subtotal strong").invoke("attr", "data-subtotal-valor").then(value => { valorSubtotal = Number(value)});
+        cy.get(".subtotal strong").invoke("attr", "data-subtotal-valor").then(value => {valorSubtotal = Number(value)});
 
         cy.get(".total strong").should("have.attr", "data-total-valor");
         cy.get(".total strong").invoke("attr", "data-total-valor").then(value => { 
@@ -79,13 +65,7 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
     });
 
     it('Manter o cupom Frete grátis no Checkout', () => {
-        cy.get('.botao.principal.grande').click();
-
-        cy.get('#id_email_login').type("isadora.guima@gmail.com");
-        cy.get('.submit-email.botao.principal.grande').click();
-
-        cy.get('#id_senha_login').type("penguino");
-        cy.get('#id_botao_login').click();
+        cy.irParaCheckout();
 
         cy.url()
             .should('contain', '/checkout/');
@@ -124,15 +104,10 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
     });
 
     it('O cupom Frete grátis deve ser aplicado na forma de pagamento', () => {
-        cy.get('.botao.principal.grande').click();
+        cy.irParaCheckout();
 
-        cy.get('#id_email_login').type("isadora.guima@gmail.com");
-        cy.get('.submit-email.botao.principal.grande').click();
-
-        cy.get('#id_senha_login').type("penguino");
-        cy.get('#id_botao_login').click();
-
-        cy.url().should('contain', '/checkout/');
+        cy.url()
+            .should('contain', '/checkout/');
 
         cy.get('#radio-cartao').check();
         cy.get('#cartao_cartao_numero')
@@ -185,15 +160,10 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
     });
 
     it('Fechar uma compra com cupom Frete grátis', () => {
-        cy.get('.botao.principal.grande').click();
+        cy.irParaCheckout();
 
-        cy.get('#id_email_login').type("isadora.guima@gmail.com");
-        cy.get('.submit-email.botao.principal.grande').click();
-
-        cy.get('#id_senha_login').type("penguino");
-        cy.get('#id_botao_login').click();
-
-        cy.url().should('contain', '/checkout/');
+        cy.url()
+            .should('contain', '/checkout/');
 
         cy.get('#radio-mercadopagov1-520160').check();
         cy.get('#finalizarCompra').click();
