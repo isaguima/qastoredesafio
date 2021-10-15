@@ -52,7 +52,6 @@ describe('Adicionar / remover um cupom de desconto no carrinho', () => {
         cy.get(".total strong").should("have.attr", "data-total-valor");
         cy.get(".total strong").invoke("attr", "data-total-valor").then(value => { 
             valorTotal = Number(value.replace(",",".")); 
-            console.log(value);
             expect(valorTotal).to.be.equal(valorSubtotal - 30);
         });     
     });
